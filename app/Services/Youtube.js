@@ -1,6 +1,7 @@
 const ytpl = require('ytpl')
 const ytdl = require('ytdl-core')
 const FfmpegCommand = require('fluent-ffmpeg')
+const ImageService = require('../Services/Image')
 
 class YoutubeService {
   static async getPlaylist(url) {
@@ -23,8 +24,9 @@ class YoutubeService {
   static async getDownloadVideoStream(url = 'https://www.youtube.com/watch?v=xGpJk3TSUi4') {
     const video = await YoutubeService.getVideoInfo(url)
     const videoStream = ytdl(url, { quality: 'highestaudio' })
-    const image = video.videoDetails.thumbnails[0].url
-    const imagePath = `${process.cwd()}/picture.jpeg`
+
+    const imageUrl = video.videoDetails.thumbnails[0].url
+    const imageBuffer = await ImageService.getImageBufferFromUrl(imageUrl)
 
     const through = require('through2')
     let counter = 0
@@ -37,7 +39,7 @@ class YoutubeService {
           if (counter === 0) {
             const tags = {
               title: 'Tommorrow',
-              APIC: imagePath,
+              APIC: imageBuffer,
               comment: {
                 language: 'eng',
                 text: 'I DID IT!!',
