@@ -14,10 +14,8 @@ class YoutubeController {
   }
 
   async downloadVideo(req, res) {
-    res.setHeader('Content-Disposition', 'Attachment')
-
     const downloadVideoStream = await YoutubeService.getDownloadVideoStream(link)
-    return downloadVideoStream.pipe(res)
+    return res.sendStream(downloadVideoStream)
   }
 }
 
